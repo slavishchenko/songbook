@@ -62,6 +62,15 @@ _____
 - In the sidebar, you can see recommended songs to learn next
 - You can add a song to your setlist by clicking the "_Add to setlist_" button
 
+## Technologies used
+
+- Python/Django
+- HTML5
+- Bootstrap5
+- CSS3
+
+
+
 
 
 
