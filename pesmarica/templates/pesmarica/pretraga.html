@@ -1,0 +1,191 @@
+{% extends 'pesmarica/base.html' %}
+{% load static %}
+{% load pesmarica_extras %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-9">
+            {% if q %}
+                
+                <div class="card shadow p-3 mb-5 bg-body rounded">
+                    <div class="card-body">
+                        <div class="container">
+                            {% if pesme %}
+                                <h4 class="text-dark text-center p-2 mb-5">Rezultati pretrage za <em>"{{ q }}"</em></h4>                       
+                                <ul class="list-group list-group-flush">
+                                    {% for pesma in pesme %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <a href="{% url 'akordi' pesma.id pesma.izvodjac|slug pesma.naziv_pesme|slug %}">
+                                                {{ pesma.izvodjac }} - {{ pesma.naziv_pesme }}
+                                            </a>
+                                            <div class="dropdown">
+                                                <span type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-three-dots-vertical"></i>
+                                                </span>
+                                                <ul class="dropdown-menu">
+                                                    {% if user.is_authenticated %}
+                                                        <li>
+                                                            <span class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#pretraga{{ forloop.counter }}">
+                                                            Dodaj u...
+                                                            </span>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a href="{% url 'izvodjac' pesma.izvodjac|slug %}" class="dropdown-item">Više od izvođača</a></li>
+                                                    {% else %}
+                                                        <li><a href="{% url 'izvodjac' pesma.izvodjac|slug %}" class="dropdown-item">Više od izvođača</a></li>
+                                                    {% endif %}
+                                                </ul>    
+                                            </div>
+                                        </li>
+                                        <form id="{{ forloop.counter }}" action="{% url 'dodaj-pesmu' pesma.id %}" method="post">
+                                            {% csrf_token %}
+                                            <fieldset class="form-group">
+                                                <div class="modal fade" id="pretraga{{ forloop.counter }}"  tabindex="-1" aria-labelledby="pretraga{{ forloop.counter }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header text-center">
+                                                                <h5 class="text-center modal-title" id="pretraga{{ forloop.counter }}Label">Dodaj u...</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            {% if repertoari %}
+                                                                <div class="modal-body">
+                                                                    <select class="form-select" name="repertoar" id="{{ forloop.counter }}">
+                                                                        {% for r in repertoari %}
+                                                                            <option value="{{ r }}">{{ r }}</option>
+                                                                        {% endfor%}
+                                                                    </select>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="submit" name="save" value="save" class="btn btn-danger">Sačuvaj</button>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="modal-body">
+                                                                    <p class="text-muted">Trenutno nemate nijedan repertoar.
+                                                                        <a href="{% url 'repertoar' %}" class="text-danger">Napravi repertoar</a>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <h4 class="text-dark text-center p-2 mb-5">Hmmm... ništa nije pronađeno za <em>"{{ q }}"</em></h4>
+                                <hr>
+                                <p class="lead text-center">Žao nam je, izgleda da još uvek nismo naučili tu pesmu.<br>Kad je naučiš, <a class="text-danger" href="{% url 'dodaj-akorde' %}">dodaj akorde</a> i pomozi drugima.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                <h5 class="lead text-dark text-center p-2"><em>Hmmm...</em><br> Da niste zaboravili termin za pretragu? &#129300;</h5>
+
+                <div class="container mt-5">
+                    <div class="row row-cols-1 row-cols-md-1">
+                        <div class="col mb-4">
+                            <div class="card shadow p-3 mb-5 bg-body rounded">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center text-danger">NAUČI</h5>
+                                    <div class="container">
+                                        <ul class="list-group list-group-flush">
+                    
+                                            {% for pesma in najnovije %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <a href="{% url 'akordi' pesma.id pesma.izvodjac|slug pesma.naziv_pesme|slug %}">{{ pesma.izvodjac }} - {{ pesma.naziv_pesme }}</a>
+                                                    <div class="dropdown">
+                                                        <span type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="bi bi-three-dots-vertical"></i>
+                                                        </span>
+                                                        <ul class="dropdown-menu">
+                                                            {% if user.is_authenticated %}
+                                                                <li>
+                                                                    <span class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#pretraga{{ forloop.counter }}">
+                                                                    Dodaj u...
+                                                                    </span>
+                                                                </li>
+                                                                <li><hr class="dropdown-divider"></li>
+                                                                <li><a href="{% url 'izvodjac' pesma.izvodjac|slug %}" class="dropdown-item">Više od izvođača</a></li>
+                                                            {% else %}
+                                                                <li><a href="{% url 'izvodjac' pesma.izvodjac|slug %}" class="dropdown-item">Više od izvođača</a></li>
+                                                            {% endif %}
+                                                        </ul>    
+                                                    </div>
+                                                </li>
+                                                <form id="{{ forloop.counter }}" action="{% url 'dodaj-pesmu' pesma.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <fieldset class="form-group">
+                                                        <div class="modal fade" id="pretraga{{ forloop.counter }}"  tabindex="-1" aria-labelledby="pretraga{{ forloop.counter }}" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header text-center">
+                                                                        <h5 class="text-center modal-title" id="pretraga{{ forloop.counter }}Label">Dodaj u...</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    {% if repertoari %}
+                                                                        <div class="modal-body">
+                                                                            <select class="form-select" name="repertoar" id="{{ forloop.counter }}">
+                                                                                {% for r in repertoari %}
+                                                                                    <option value="{{ r }}">{{ r }}</option>
+                                                                                {% endfor%}
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="submit" name="save" value="save" class="btn btn-danger">Sačuvaj</button>
+                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                                                        </div>
+                                                                    {% else %}
+                                                                        <div class="modal-body">
+                                                                            <p class="text-muted">Trenutno nemate nijedan repertoar.
+                                                                                <a href="{% url 'repertoar' %}" class="text-danger">Napravi repertoar</a>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                                                        </div>
+                                                                    {% endif %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </fieldset>
+                                                </form>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            {% endif %}
+
+
+        </div> 
+        
+        <div class="col-lg-3">
+            <div class="mb-5 card bg-body rounded">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-center">
+                        <form class="form-inline my-2 my-lg-0 w-100" method=GET action="{% url 'pretraga' %}">
+                            <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q">
+                            <button class="btn btn-outline-danger my-2 my-sm-3 w-100 border-2" type="submit">PRETRAŽI</button>
+                        </form>
+                    </div>
+       
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>         
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'pesmarica/base.html' %}
+{% block nav_link_pesmarica %}active{% endblock nav_link_pesmarica %}
+{% load static %}
+{% load pesmarica_extras %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+
+        <div class="col-sm-12 col-md-12 col-lg-9">
+            <h2 class="bg-danger text-light text-center p-2 text-uppercase">{{ slug }}</h2>
+            
+            {% for album in albumi %}
+                <div class="card shadow p-3 mb-5 bg-body rounded">
+                    <div class="card-body">
+                        <div class="container">
+                            <h4 class="card-title text-left mb-3 text-dark">{{ album }}</h4>
+                            <ul class="list-group list-group-flush">
+                                {% for pesma in pesme %}
+                                    {% if pesma.album == album %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <a href="{% url 'akordi' pesma.id pesma.izvodjac|slug pesma.naziv_pesme|slug %}">{{ pesma.izvodjac }} - {{ pesma.naziv_pesme }}</a>
+                                            {% if user.is_authenticated %}
+                                                <div class="dropdown">
+                                                    <span type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="bi bi-three-dots-vertical"></i>
+                                                    </span>
+                                                    <ul class="dropdown-menu">
+                                                            <li>
+                                                            <span class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#nasumicno{{ forloop.counter }}">
+                                                            Dodaj u...
+                                                            </span>
+                                                        </li>
+                                                    </ul>    
+                                                </div>
+                                            {% endif %}  
+                                        </li>
+                                        <form id="{{ forloop.counter }}" action="{% url 'dodaj-pesmu' pesma.id %}" method="post">
+                                            {% csrf_token %}
+                                            <fieldset class="form-group">
+                                                <div class="modal fade" id="nasumicno{{ forloop.counter }}"  tabindex="-1" aria-labelledby="nasumicno{{ forloop.counter }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header text-center">
+                                                                <h5 class="text-center modal-title" id="nasumicno{{ forloop.counter }}Label">Dodaj u...</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            {% if repertoari %}
+                                                                <div class="modal-body">
+                                                                    <select class="form-select" name="repertoar" id="{{ forloop.counter }}">
+                                                                        {% for r in repertoari %}
+                                                                            <option value="{{ r }}">{{ r }}</option>
+                                                                        {% endfor%}
+                                                                    </select>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="submit" name="save" value="save" class="btn btn-danger">Sačuvaj</button>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="modal-body">
+                                                                    <p class="text-muted">Trenutno nemate nijedan repertoar.
+                                                                        <a href="{% url 'repertoar' %}" class="text-danger">Napravi repertoar</a>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </form>                                        
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>            
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}    
+        </div>
+
+        <div class="col-lg-3 mb-5">
+            <div class="card bg-body rounded">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-center">
+                        <form class="form-inline my-2 my-lg-0 w-100" method=GET action="{% url 'pretraga' %}">
+                            <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q">
+                            <button class="btn btn-outline-danger my-2 my-sm-3 w-100 border-2" type="submit">PRETRAŽI</button>
+                        </form>
+                    </div>
+
+                    <div class="card-body mt-3">
+                        <h5 class="card-title text-center text-danger">NAUČI</h5>
+                            {% for p in najnovije %}
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item text-left">
+                                        <a href="{% url 'akordi' p.id p.izvodjac|slug p.naziv_pesme|slug %}">{{ p.izvodjac }} - {{ p.naziv_pesme }}</a>
+                                    </li>
+                                </ul>
+                            {% endfor %}
+                        <a href="{% url 'dodaj-akorde' %}" class="btn btn-outline-danger w-100 border-2 mt-5">Dodaj Akorde</a>
+                    </div>    
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</div>
+{% endblock %}

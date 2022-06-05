@@ -1,0 +1,123 @@
+{% extends 'pesmarica/base.html' %}
+{% load crispy_forms_tags %}
+{% block nav_link_repertoar %}active{% endblock nav_link_repertoar %}
+{% load static %}
+{% load pesmarica_extras %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-3">
+            <div class="card bg-body rounded mb-5">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">Moji Repertoari</h5>
+                    {% if not moji_repertoari %}
+                        <small class="text-muted">Ovde će biti prikazani vaši repertoari</small>
+                    {% else %}
+                        <ul class="list-group list-group-flush">
+                            {% for repertoar in moji_repertoari %}
+                                <li class="list-group-item text-left">
+                                    <a href="{% url 'repertoar-detail' repertoar.id repertoar|slug %}">{{ repertoar }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <form action="{% url 'repertoar' %}" method="post">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            <button type="button" class="mt-3 btn btn-outline-dark w-100 border-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Novi Repertoar
+                            </button>
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header text-center">
+                                            <h5 class="text-center modal-title" id="exampleModalLabel">Novi Repertoar</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ form|crispy }}
+                                            {% for error in ValidationError %}
+                                                <p class="danger">{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" value="save" name="save" class="btn btn-danger">Sačuvaj</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>            
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            {% for repertoar in repertoari %}
+                <div class="card shadow-sm mb-5">
+                    <div class="card-header d-flex justify-content-between aligin-items-center">
+                        <div class="article-metadata">
+                            <span class="text-dark mr-2">{{ repertoar.autor }}</span>
+                            <small class="text-muted">{{ repertoar.datum_dodavanja|date:"d. F Y." }}</small>
+                        </div>
+                        {% if repertoar.autor == user %}
+                            <div class="dropdown">
+                                <span type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots"></i>
+                                </span>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'repertoar-delete' repertoar.id repertoar.naslov|slug %}">Izbriši</a>   
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'repertoar-update' repertoar.id repertoar.naslov|slug %}">Izmeni</a></li>
+                                </ul>  
+                            </div>
+                        {% endif %}                           
+                    </div>
+                    <div class="card-body">
+                        <h2><a href="{% url 'repertoar-detail' repertoar.id repertoar.naslov|slug %}">{{ repertoar.naslov }}</a></h2>
+                        <div class="container">
+                            <p class="text-muted">{{ repertoar.opis }}</p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted"><em>Ukupno pesama:</em> {{ repertoar.set.all|length }}</small>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>  
+        
+        <div class="col-lg-3">
+            <div class="card bg-body rounded mb-5">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-center">
+                        <form class="form-inline my-2 my-lg-0 w-100" method=GET action="{% url 'pretraga' %}">
+                            <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q">
+                            <button class="btn btn-outline-danger my-2 my-sm-3 w-100 border-2" type="submit">PRETRAŽI</button>
+                        </form>
+                    </div>
+
+                    <div class="card-body mt-3">
+                        <h5 class="card-title text-center text-danger">NAUČI</h5>
+                        {% for pesma in nasumicno %}
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item text-left">
+                                    <a href="{% url 'akordi' pesma.id pesma.izvodjac|slug pesma.naziv_pesme|slug %}">{{ pesma.izvodjac }} - {{ pesma.naziv_pesme }}</a>
+                                </li>
+                            </ul>
+                        {% endfor %}    
+                    </div> 
+
+                    <a href="{% url 'dodaj-akorde' %}" class="btn btn-outline-danger w-100 border-2 mt-5">Dodaj Akorde</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,1 @@
+web: gunicorn zbirka_pesama.wsgi

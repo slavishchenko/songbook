@@ -1,0 +1,36 @@
+{% extends 'pesmarica/base.html' %}
+{% load crispy_forms_tags %}
+{% load pesmarica_extras %}
+{% block nav_link_dodaj %}active{% endblock nav_link_dodaj %}
+
+{% block  content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card shadow p-3 mb-5 bg-body rounded">
+                <div class="card-body">
+                    <div class="container d-flex justify-content-center">
+                        <form  action="{% url 'dodaj-akorde' %}" method="post">
+                            {% csrf_token %}
+                            <fieldset class="form-group">
+                                <legend class="border-bottom mb-4 text-center text-dark">Nova pesma:</legend>                                                    
+                                {{ izvodjac_form|crispy }}
+                                {{ album_form|crispy }}
+                                {{ pesma_form|crispy }}
+                                {% for error in ValidationError %}
+                                    <p class="danger">{{ error }}</p>
+                                {% endfor %}
+                            </fieldset>
+                            <div class="form-group">
+                                <button class="btn btn-outline-danger mt-3 mb-5 w-100" type="submit">Dodaj</button>
+                            </div>
+                        </form>     
+                    </div>
+                </div>
+            </div>      
+        </div>
+    </div>
+</div>
+
+{% endblock %}

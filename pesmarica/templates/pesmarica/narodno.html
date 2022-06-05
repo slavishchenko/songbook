@@ -1,0 +1,82 @@
+{% extends 'pesmarica/base.html' %}
+{% block nav_link_pesmarica %}active{% endblock nav_link_pesmarica %}
+{% load static %}
+{% load pesmarica_extras %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-9">
+            <div class="d-flex justify-content-center">
+                <a href="{% url 'pesmarica' %}" class="btn btn-danger rounded-pill text-light">Sve</a>
+                <a href="{% url 'rok-pesmarica' %}" class="btn btn-danger rounded-pill text-light">Rok</a>
+                <a href="{% url 'narodna-pesmarica' %}" class="btn btn-dark rounded-pill text-light">Narodno</a>
+            </div>
+            <!-- KARTICE -->
+            <div class="row row-cols-sm-3 row-cols-md-4 row-cols-lg-4">
+                {% for page in page_obj  %}
+                  <div class="col">
+
+                        <div class="card mt-3 rounded" style="width: 10rem;">
+                            <div class="pic-container">
+                                <img src="{% static 'pesmarica/imgs/cover.png' %}" class="card-img-top rounded shadow bg-white rounded" alt="Artist Picture">
+                                <h5 class="card-title centered"><a href="{% url 'izvodjac' page|slug %}" class="text-dark font-weight-bold text-uppercase text-center text-justify">{{ page }}</a></h5>
+                            </div>                   
+                        </div>
+
+                  </div>
+                {% endfor %}
+            </div>
+            <!-- KARTICE -->
+            <div class="pagination justify-content-center mt-5">
+
+                {% if page_obj.has_previous %}
+                    <a class="btn btn-outline-danger mb-5" href="?page=1">Prva</a>
+                    <a class="btn btn-outline-danger mb-5" href="?page={{ page_obj.previous_page }}" aria-label="Prethodna">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <a class="btn btn-danger mb-5" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}  
+                        <a class="btn btn-outline-danger mb-5" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a class="btn btn-outline-danger mb-5" href="?page={{ page_obj.next_page_number }}" aria-label="Prethodna">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                    <a class="btn btn-outline-danger mb-5" href="?page={{ page_obj.paginator.num_pages }}">Zadnja</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card bg-body rounded mb-5">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                        <form class="form-inline my-2 my-lg-0 w-100" method=GET action="{% url 'pretraga' %}">
+                            <input class="form-control mr-sm-2" type="search" aria-label="Search" name="q">
+                            <button class="btn btn-outline-danger my-2 my-sm-3 w-100 border-2" type="submit">PRETRAŽI</button>
+                        </form>
+                    </div>
+                    <div class="card-body mt-3">
+                        <h5 class="card-title text-center text-danger">NAUČi</h5>
+                        {% for pesma in najnovije %}
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item text-left">
+                                    <a href="{% url 'akordi' pesma.id pesma.izvodjac|slug pesma.naziv_pesme|slug %}">{{ pesma.izvodjac }} - {{ pesma.naziv_pesme }}</a>
+                                </li>
+                            </ul>
+                        {% endfor %}
+                        <a href="{% url 'dodaj-akorde' %}" class="btn btn-outline-danger w-100 border-2 mt-5">Dodaj Akorde</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

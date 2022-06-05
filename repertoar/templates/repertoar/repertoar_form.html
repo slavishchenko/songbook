@@ -1,0 +1,37 @@
+{% extends 'pesmarica/base.html' %}
+{% load crispy_forms_tags %}
+{% block nav_link_repertoar %}active{% endblock nav_link_repertoar %}
+{% load static %}
+{% load pesmarica_extras %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card bg-body rounded mb-5">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            <div class="border-bottom text-center">
+                                <h5 class="text-center">Uredi Repertoar</h5>
+                            </div>
+                            <div class="modal-body">
+                                {{ form|crispy }}
+                                {% for error in ValidationError %}
+                                    <p class="danger">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-danger">Sačuvaj</button>
+                                <button type="submit" class="btn btn-secondary">Otkaži</button>
+                            </div>
+                        </fieldset>
+                    </form>           
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
