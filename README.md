@@ -55,13 +55,13 @@ _____
 
 <img src="images/chord-sheet-page.png" width=800;>
 
-##### Submitting chord sheets
+#### Submitting chord sheets
 
 - To submit a chord sheet, click _Add chords_, fill out the form, and, after the admin has reviewed and approved your submission, chords will be made public
 - **Chords have to be accurate and in the original key**
 - **You have to include chords for intros, solos, improvs, etc**
 
-##### Chord sheet page
+#### Chord sheet page
 
 - Chords sheets are accompanied with useful information about the song, such as tempo, strumming pattern, key, song structure, etc.
 - In the sidebar, you can see recommended songs to learn next
